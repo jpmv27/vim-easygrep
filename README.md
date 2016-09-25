@@ -1,3 +1,9 @@
+**This is a FORK of https://github.com/dkprice/vim-easygrep**
+
+Changes are licensed under the same terms as the original
+
+# Original README
+
 vim-easygrep
 ============
 
