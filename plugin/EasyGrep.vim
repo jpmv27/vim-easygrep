@@ -1367,6 +1367,7 @@ endfunction
 " FillWindow {{{
 function! s:FillWindow()
 
+    setlocal filetype=easygrep
     setlocal modifiable
 
     " Clear the entire window
