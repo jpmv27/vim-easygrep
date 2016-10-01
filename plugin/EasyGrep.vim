@@ -683,7 +683,7 @@ endfunction
 "}}}
 " SetFilesToInclude {{{
 function! <sid>SetFilesToInclude()
-    let filesToInclude = input("Enter patterns to include, seperated by a comma: ", g:EasyGrepFilesToInclude)
+    let filesToInclude = input("Enter patterns to include, separated by a comma: ", g:EasyGrepFilesToInclude)
     let g:EasyGrepFilesToInclude = EasyGrep#Trim(filesToInclude)
 
     call s:RefreshAllOptions()
@@ -697,7 +697,7 @@ endfunction
 "}}}
 " SetFilesToExclude {{{
 function! <sid>SetFilesToExclude()
-    let filesToExclude = input("Enter patterns to exclude, seperated by a comma: ", g:EasyGrepFilesToExclude)
+    let filesToExclude = input("Enter patterns to exclude, separated by a comma: ", g:EasyGrepFilesToExclude)
     let g:EasyGrepFilesToExclude = EasyGrep#Trim(filesToExclude)
 
     call s:RefreshAllOptions()
@@ -709,6 +709,23 @@ function! <sid>SetFilesToExclude()
         endif
     else
         call s:Echo("Clearing files to exclude")
+    endif
+endfunction
+"}}}
+" SetDirsToExclude {{{
+function! <sid>SetDirsToExclude()
+    let dirsToExclude = input("Enter patterns to exclude, separated by a comma: ", g:EasyGrepDirsToExclude)
+    let g:EasyGrepDirsToExclude = EasyGrep#Trim(dirsToExclude)
+
+    call s:RefreshAllOptions()
+
+    if !empty(g:EasyGrepDirsToExclude)
+        call s:Echo("Set directories to exclude to (".g:EasyGrepDirsToExclude.")")
+        if !s:CommandSupportsExclusions()
+            call s:Echo("But note that your command, ".s:GetGrepCommandName().", does not support them. See the docs for supported programs.")
+        endif
+    else
+        call s:Echo("Clearing directories to exclude")
     endif
 endfunction
 "}}}
@@ -839,6 +856,7 @@ function! <sid>EchoOptionsSet()
             \ "g:EasyGrepHidden",
             \ "g:EasyGrepFilesToInclude",
             \ "g:EasyGrepFilesToExclude",
+            \ "g:EasyGrepDirsToExclude",
             \ "g:EasyGrepAllOptionsInExplorer",
             \ "g:EasyGrepWindow",
             \ "g:EasyGrepReplaceWindowMode",
@@ -1384,6 +1402,7 @@ function! s:CreateOptionMappings()
 
     exe "nmap <silent> ".p."I  :call <sid>SetFilesToInclude()<cr>"
     exe "nmap <silent> ".p."x  :call <sid>SetFilesToExclude()<cr>"
+    exe "nmap <silent> ".p."X  :call <sid>SetDirsToExclude()<cr>"
     exe "nmap <silent> ".p."c  :call <sid>ToggleCommand()<cr>"
     exe "nmap <silent> ".p."r  :call <sid>ToggleRecursion()<cr>"
     exe "nmap <silent> ".p."d  :call <sid>ToggleBufferDirectories()<cr>"
@@ -1425,6 +1444,7 @@ function! s:CreateOptionsString()
     call add(s:Options, "\"e: echo files that would be searched")
     if g:EasyGrepAllOptionsInExplorer
         call add(s:Options, "\"x: set files to exclude")
+        call add(s:Options, "\"X: set directories to exclude")
         call add(s:Options, "\"c: change grep command (".s:GetGrepCommandNameWithOptions().")")
         call add(s:Options, "\"w: window to use (".EasyGrep#GetErrorListName().")")
         call add(s:Options, "\"m: replace window mode (".s:GetReplaceWindowModeString(g:EasyGrepReplaceWindowMode).")")
@@ -1450,7 +1470,8 @@ function! s:CreateOptionsString()
     call add(s:Options, "")
     call add(s:Options, "\"Grep Targets: ".join(s:GetFileTargetList(0), ' '))
     call add(s:Options, "\"Inclusions: ".(!empty(g:EasyGrepFilesToInclude) ? g:EasyGrepFilesToInclude : "none"))
-    call add(s:Options, "\"Exclusions: ".(!empty(g:EasyGrepFilesToExclude) ? g:EasyGrepFilesToExclude : "none").(empty(g:EasyGrepFilesToExclude) || s:CommandSupportsExclusions() ? "" : " (not supported with grepprg='".s:GetGrepProgramName()."')"))
+    call add(s:Options, "\"File Exclusions: ".(!empty(g:EasyGrepFilesToExclude) ? g:EasyGrepFilesToExclude : "none").(empty(g:EasyGrepFilesToExclude) || s:CommandSupportsExclusions() ? "" : " (not supported with grepprg='".s:GetGrepProgramName()."')"))
+    call add(s:Options, "\"Directory Exclusions: ".(!empty(g:EasyGrepDirsToExclude) ? g:EasyGrepDirsToExclude : "none").(empty(g:EasyGrepDirsToExclude) || s:CommandSupportsExclusions() ? "" : " (not supported with grepprg='".s:GetGrepProgramName()."')"))
     call add(s:Options, "")
 
 endfunction
@@ -1470,6 +1491,7 @@ function! s:MapOptionsExplorerKeys()
     nnoremap <buffer> <silent> e    :call <sid>EchoFilesSearched()<cr>
 
     nnoremap <buffer> <silent> x    :call <sid>SetFilesToExclude()<cr>
+    nnoremap <buffer> <silent> X    :call <sid>SetDirsToExclude()<cr>
     nnoremap <buffer> <silent> c    :call <sid>ToggleCommand()<cr>
     nnoremap <buffer> <silent> w    :call <sid>ToggleWindow()<cr>
     nnoremap <buffer> <silent> m    :call <sid>ToggleReplaceWindowMode()<cr>
@@ -2263,6 +2285,7 @@ function! s:SetGrepVariables(command)
 
         call EasyGrep#SaveVariable("wildignore")
         silent exe "set wildignore+=".g:EasyGrepFilesToExclude
+        silent exe "set wildignore+=".g:EasyGrepDirsToExclude
     endif
 endfunction
 "}}}
@@ -2347,6 +2370,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'req_str_escapespecialcharacters': "configured@runtime",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '',
+                \ 'opt_str_mapdirexclusionsexpression': '',
                 \ 'opt_bool_filtertargetswithnofiles': '0',
                 \ 'opt_bool_bufferdirsearchallowed': '1',
                 \ 'opt_str_suppresserrormessages': '',
@@ -2369,7 +2393,8 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordoption': '-w ',
                 \ 'req_str_escapespecialcharacters': "-\^$#.*[]",
                 \ 'opt_str_escapespecialcharacterstwice': "",
-                \ 'opt_str_mapexclusionsexpression': '"--exclude=\"".v:val."\""." --exclude-dir=\"".v:val."\""',
+                \ 'opt_str_mapexclusionsexpression': '"--exclude=\"".v:val."\""',
+                \ 'opt_str_mapdirexclusionsexpression': '" --exclude-dir=\"".v:val."\""',
                 \ 'opt_bool_filtertargetswithnofiles': '0',
                 \ 'opt_bool_bufferdirsearchallowed': '!recursive',
                 \ 'opt_str_suppresserrormessages': '-s',
@@ -2395,6 +2420,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'req_str_escapespecialcharacters': "-\^$#.*",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '',
+                \ 'opt_str_mapdirexclusionsexpression': '',
                 \ 'opt_bool_filtertargetswithnofiles': '0',
                 \ 'opt_bool_bufferdirsearchallowed': '0',
                 \ 'opt_str_suppresserrormessages': '',
@@ -2417,7 +2443,8 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordoption': '-w ',
                 \ 'req_str_escapespecialcharacters': "-\^$#.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "|",
-                \ 'opt_str_mapexclusionsexpression': '"--ignore-dir=\"".v:val."\" --ignore-file=ext:\"".substitute(v:val, "\\*\\.", "", "")."\""',
+                \ 'opt_str_mapexclusionsexpression': '"--ignore-file=ext:\"".substitute(v:val, "\\*\\.", "", "")."\""',
+                \ 'opt_str_mapdirexclusionsexpression': '"--ignore-dir=\"".v:val."\"".substitute(v:val, "\\*\\.", "", "")."\""',
                 \ 'opt_bool_filtertargetswithnofiles': '0',
                 \ 'opt_bool_bufferdirsearchallowed': '1',
                 \ 'opt_str_suppresserrormessages': '',
@@ -2447,6 +2474,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'req_str_escapespecialcharacters': "-\^$#.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "|",
                 \ 'opt_str_mapexclusionsexpression': '"--ignore=\"".v:val."\""',
+                \ 'opt_str_mapdirexclusionsexpression': '',
                 \ 'opt_bool_filtertargetswithnofiles': '0',
                 \ 'opt_bool_bufferdirsearchallowed': '1',
                 \ 'opt_str_suppresserrormessages': '',
@@ -2472,6 +2500,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'req_str_escapespecialcharacters': "-\^$#.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '"--ignore=\"".v:val."\""',
+                \ 'opt_str_mapdirexclusionsexpression': '',
                 \ 'opt_bool_filtertargetswithnofiles': '0',
                 \ 'opt_bool_bufferdirsearchallowed': '1',
                 \ 'opt_str_suppresserrormessages': '',
@@ -2497,6 +2526,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'req_str_escapespecialcharacters': "\^$#.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '',
+                \ 'opt_str_mapdirexclusionsexpression': '',
                 \ 'opt_bool_filtertargetswithnofiles': '0',
                 \ 'opt_bool_bufferdirsearchallowed': '0',
                 \ 'opt_str_suppresserrormessages': '',
@@ -2521,6 +2551,7 @@ function! s:ConfigureGrepCommandParameters()
                 "\ 'req_str_escapespecialcharacters': "\^$#.*",
                 "\ 'opt_str_escapespecialcharacterstwice': "",
                 "\ 'opt_str_mapexclusionsexpression': '',
+                "\ 'opt_str_mapdirexclusionsexpression': '',
                 "\ 'opt_bool_filtertargetswithnofiles': '1',
                 "\ 'opt_bool_bufferdirsearchallowed': '1',
                 "\ 'opt_str_suppresserrormessages': '',
@@ -2652,6 +2683,7 @@ function! s:GetGrepCommandLine(pattern, add, wholeword, count, escapeArgs, filte
 
     let fileTargetList = s:CommandHas("opt_bool_nofiletargets") ? [] : s:GetFileTargetList(1)
     let filesToExclude = g:EasyGrepFilesToExclude
+    let dirsToExclude = g:EasyGrepDirsToExclude
 
     if a:filterTargetsWithNoFiles && s:CommandHas("opt_bool_filtertargetswithnofiles")
         call s:FilterTargetsWithNoFiles(fileTargetList)
@@ -2679,6 +2711,12 @@ function! s:GetGrepCommandLine(pattern, add, wholeword, count, escapeArgs, filte
     " Add exclusions
     if s:CommandHasLen("opt_str_mapexclusionsexpression")
         let opts .= " " . join(map(split(filesToExclude, ','), commandParams["opt_str_mapexclusionsexpression"]), ' ') . " "
+
+        if s:CommandHasLen("opt_str_mapdirexclusionsexpression")
+            let opts .= " " . join(map(split(dirsToExclude, ','), commandParams["opt_str_mapdirexclusionsexpression"]), ' ') . " "
+        else
+            let opts .= " " . join(map(split(dirsToExclude, ','), commandParams["opt_str_mapexclusionsexpression"]), ' ') . " "
+        endif
     endif
 
     if s:CommandHas("opt_bool_isinherentlyrecursive")
@@ -2858,7 +2896,10 @@ function! s:WarnNoMatches(pattern)
         let s = "            "
     endfor
     if !empty(g:EasyGrepFilesToExclude) && s:CommandSupportsExclusions()
-        call EasyGrep#Warning("Exclusions:  ".g:EasyGrepFilesToExclude)
+        call EasyGrep#Warning("File Exclusions:  ".g:EasyGrepFilesToExclude)
+    endif
+    if !empty(g:EasyGrepDirsToExclude) && s:CommandSupportsExclusions()
+        call EasyGrep#Warning("Directory Exclusions:  ".g:EasyGrepDirsToExclude)
     endif
 endfunction
 " }}}
@@ -3642,6 +3683,10 @@ endif
 
 if !exists("g:EasyGrepFilesToExclude")
     let g:EasyGrepFilesToExclude="*.swp,*~"
+endif
+
+if !exists("g:EasyGrepDirsToExclude")
+    let g:EasyGrepDirsToExclude=""
 endif
 
 if !exists("g:EasyGrepPatternType")
