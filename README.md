@@ -1,5 +1,16 @@
 **This is a FORK of https://github.com/dkprice/vim-easygrep**
 
+Changes:
+
+- Remove test files to reduce size of local installations
+- Remove reference to clipboard register (merged upstream)
+- Add option to include/exclude binary files (merged upstream)
+- Separate options for excluding files and directories
+- Complete implementation of file inclusion option (merged upstream)
+- Add filetype (easygrep) to explorer window buffer
+- Don't open explorer window when already open (merged upstream)
+- redraw! on no matches (merged upstream)
+
 Changes are licensed under the same terms as the original
 
 # Original README
