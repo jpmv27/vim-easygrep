@@ -2954,13 +2954,13 @@ function! s:DoGrep(pattern, add, wholeword, count, escapeArgs, xgrep)
         redraw!
         if g:EasyGrepOpenWindowOnMatch
             if g:EasyGrepWindow == 0
-                if !EasyGrep#IsQuickfixListOpen()
+                "if !EasyGrep#IsQuickfixListOpen()
                     execute g:EasyGrepWindowPosition." copen"
-                endif
+                "endif
             else
-                if !EasyGrep#IsLocationListOpen()
+                "if !EasyGrep#IsLocationListOpen()
                     execute g:EasyGrepWindowPosition." lopen"
-                endif
+                "endif
             endif
             setlocal nofoldenable
         endif
