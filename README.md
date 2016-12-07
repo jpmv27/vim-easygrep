@@ -11,6 +11,7 @@ Changes:
 - Don't open explorer window when already open (merged upstream)
 - redraw! on no matches (merged upstream)
 - Unconditionally open grep window if OpenWindowOnMatch is true
+- Line break when echoing changed options
 
 Changes are licensed under the same terms as the original
 
