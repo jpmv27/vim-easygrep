@@ -696,6 +696,7 @@ function! <sid>SetFilesToInclude()
 
     call s:RefreshAllOptions()
 
+    call s:EchoNewline()
     if !empty(g:EasyGrepFilesToInclude)
         call s:Echo("Set files to include to (".g:EasyGrepFilesToInclude.")")
     else
@@ -710,6 +711,7 @@ function! <sid>SetFilesToExclude()
 
     call s:RefreshAllOptions()
 
+    call s:EchoNewline()
     if !empty(g:EasyGrepFilesToExclude)
         call s:Echo("Set files to exclude to (".g:EasyGrepFilesToExclude.")")
         if !s:CommandSupportsExclusions()
@@ -727,6 +729,7 @@ function! <sid>SetDirsToExclude()
 
     call s:RefreshAllOptions()
 
+    call s:EchoNewline()
     if !empty(g:EasyGrepDirsToExclude)
         call s:Echo("Set directories to exclude to (".g:EasyGrepDirsToExclude.")")
         if !s:CommandSupportsExclusions()
@@ -1012,6 +1015,10 @@ function! s:ActivateChoice(choice)
 
     call s:UpdateSelectionLine(choice)
     call s:RefreshAllOptions()
+
+    if choice == s:EasyGrepModeUser
+        call s:EchoNewline()
+    endif
 
     let str = ""
     if choice == s:EasyGrepModeAll
