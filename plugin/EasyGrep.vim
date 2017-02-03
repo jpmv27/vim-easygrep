@@ -2641,29 +2641,29 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_bool_nofiletargets': '1',
                 \ })
 
-    "call s:RegisterGrepProgram("findstr", {
-                "\ 'req_str_programargs': '/n',
-                "\ 'req_bool_supportsexclusions': '0',
-                "\ 'req_str_recurse': '/S',
-                "\ 'req_str_caseignore': '/I',
-                "\ 'req_str_casematch': '',
-                "\ 'opt_str_warnonuse': 'The findstr program is buggy and not-recommended for use',
-                "\ 'opt_str_patternprefix': '',
-                "\ 'opt_str_patternpostfix': '',
-                "\ 'opt_str_wholewordprefix': '"\<',
-                "\ 'opt_str_wholewordpostfix': '\>"',
-                "\ 'opt_str_wholewordoption': '',
-                "\ 'req_str_escapespecialcharacters': "\^$#.*",
-                "\ 'opt_str_escapespecialcharacterstwice': "",
-                "\ 'opt_str_mapexclusionsexpression': '',
-                "\ 'opt_str_mapdirexclusionsexpression': '',
-                "\ 'opt_bool_filtertargetswithnofiles': '1',
-                "\ 'opt_bool_bufferdirsearchallowed': '1',
-                "\ 'opt_str_suppresserrormessages': '',
-                "\ 'opt_bool_directoryneedsbackslash': '1',
-                "\ 'opt_bool_isinherentlyrecursive': '0',
-                "\ 'opt_bool_isselffiltering': '0',
-                "\ })
+    call s:RegisterGrepProgram("findstr", {
+                \ 'req_str_programargs': '/n',
+                \ 'req_bool_supportsexclusions': '0',
+                \ 'req_str_recurse': '/S',
+                \ 'req_str_caseignore': '/I',
+                \ 'req_str_casematch': '',
+                \ 'opt_str_warnonuse': '',
+                \ 'opt_str_patternprefix': '',
+                \ 'opt_str_patternpostfix': '',
+                \ 'opt_str_wholewordprefix': '"\<',
+                \ 'opt_str_wholewordpostfix': '\>"',
+                \ 'opt_str_wholewordoption': '',
+                \ 'req_str_escapespecialcharacters': "\^$#.*",
+                \ 'opt_str_escapespecialcharacterstwice': "",
+                \ 'opt_str_mapexclusionsexpression': '',
+                \ 'opt_str_mapdirexclusionsexpression': '',
+                \ 'opt_bool_filtertargetswithnofiles': '1',
+                \ 'opt_bool_bufferdirsearchallowed': '1',
+                \ 'opt_str_suppresserrormessages': '',
+                \ 'opt_bool_directoryneedsbackslash': '1',
+                \ 'opt_bool_isinherentlyrecursive': '0',
+                \ 'opt_bool_isselffiltering': '0',
+                \ })
 endfunction
 " }}}
 " GetGrepCommandParameters {{{
