@@ -12,7 +12,7 @@ Changes:
 - redraw! on no matches (merged upstream)
 - Unconditionally open grep window if OpenWindowOnMatch is true
 - Line break when echoing changed options
-- Treat ModeMultipleChoice as a filtered mode
+- Treat ModeMultipleChoice as a filtered mode (merged upstream)
 - Re-enable support for findstr
 
 Changes are licensed under the same terms as the original
