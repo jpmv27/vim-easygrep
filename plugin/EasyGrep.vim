@@ -880,7 +880,8 @@ function! <sid>EchoOptionsSet()
             \ "g:EasyGrepFileAssociationsInExplorer",
             \ "g:EasyGrepExtraWarnings",
             \ "g:EasyGrepOptionPrefix",
-            \ "g:EasyGrepReplaceAllPerFile"
+            \ "g:EasyGrepReplaceAllPerFile",
+            \ "g:EasyGrepEchoCommands"
             \ ]
 
     let str = ""
@@ -2871,6 +2872,10 @@ function! s:GetGrepCommandLine(pattern, add, wholeword, count, escapeArgs, filte
     let win = g:EasyGrepWindow != 0 ? "l" : ""
     let grepCommand = a:count.win.com.a:add.bang." ".opts.pattern.aux_pattern_postfix." ".filesToGrep
 
+    if g:EasyGrepEchoCommands
+        call EasyGrep#Info('Command is "' . grepCommand . '"')
+    endif
+
     return grepCommand
 endfunction
 "}}}
@@ -3901,6 +3906,10 @@ endif
 
 if !exists("g:EasyGrepSearchCurrentBufferOnly")
     let g:EasyGrepSearchCurrentBufferOnly=0
+endif
+
+if !exists("g:EasyGrepEchoCommands")
+    let g:EasyGrepEchoCommands=0
 endif
 
 " CheckDefaultUserPattern {{{
