@@ -114,24 +114,32 @@ function! s:EscapeDirIfSpace(dir)
     return match(a:dir, ' ') == -1 ? a:dir : EasyGrep#ShellEscape(a:dir)
 endfunction
 "}}}
+" EscapeMultiple {{{
+function! s:EscapeMultiple(str, escape)
+    let str = a:str
+
+    let i = 0
+    let len = strlen(a:escape)
+    while i < len
+        let str = escape(str, a:escape[i])
+        let i += 1
+    endwhile
+
+    return str
+endfunction
+" }}}
 " DoEscapeSpecialCharacters {{{
 function! s:DoEscapeSpecialCharacters(str, escapeonce, escapetwice)
     let str = a:str
 
-    let i = 0
-    let len = strlen(a:escapeonce)
-    while i < len
-        let str = escape(str, a:escapeonce[i])
-        let i += 1
-    endwhile
+    if strlen(escapeonce) > 0
+        let str = s:EscapeMultiple(str, a:escapeonce)
+    endif
 
-    let i = 0
-    let len = strlen(a:escapetwice)
-    while i < len
-        let str = escape(str, a:escapetwice[i])
-        let str = escape(str, a:escapetwice[i])
-        let i += 1
-    endwhile
+    if strlen(escapetwice) > 0
+        let str = s:EscapeMultiple(str, a:escapetwice)
+        let str = s:EscapeMultiple(str, a:escapetwice)
+    endif
 
     return str
 endfunction
@@ -150,7 +158,7 @@ endfunction
 "}}}
 " EscapeSpecialCharactersForVim {{{
 function! s:EscapeSpecialCharactersForVim(str)
-    let escapeonce = "\\/^$#"
+    let escapeonce = "\\/^$"
     if &magic
         let escapeonce .= "*.~[]"
     endif
@@ -2441,7 +2449,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordprefix': '',
                 \ 'opt_str_wholewordpostfix': '',
                 \ 'opt_str_wholewordoption': '-w ',
-                \ 'req_str_escapespecialcharacters': "-\^$#.*[]",
+                \ 'req_str_escapespecialcharacters': "-\^$.*[]",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '"--exclude=\"".v:val."\""',
                 \ 'opt_str_mapdirexclusionsexpression': '" --exclude-dir=\"".v:val."\""',
@@ -2469,7 +2477,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordprefix': '',
                 \ 'opt_str_wholewordpostfix': '',
                 \ 'opt_str_wholewordoption': '-w ',
-                \ 'req_str_escapespecialcharacters': "-\^$#.*",
+                \ 'req_str_escapespecialcharacters': "-\^$.*",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '',
                 \ 'opt_str_mapdirexclusionsexpression': '',
@@ -2494,7 +2502,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordprefix': '',
                 \ 'opt_str_wholewordpostfix': '',
                 \ 'opt_str_wholewordoption': '-w ',
-                \ 'req_str_escapespecialcharacters': "-\^$#.*+?()[]{}",
+                \ 'req_str_escapespecialcharacters': "-\^$.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "|",
                 \ 'opt_str_mapexclusionsexpression': '"--ignore-file=ext:\"".substitute(v:val, "\\*\\.", "", "")."\""',
                 \ 'opt_str_mapdirexclusionsexpression': '"--ignore-dir=\"".v:val."\"".substitute(v:val, "\\*\\.", "", "")."\""',
@@ -2525,7 +2533,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordprefix': '',
                 \ 'opt_str_wholewordpostfix': '',
                 \ 'opt_str_wholewordoption': '-w ',
-                \ 'req_str_escapespecialcharacters': "-\^$#.*+?()[]{}",
+                \ 'req_str_escapespecialcharacters': "-\^$.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "|",
                 \ 'opt_str_mapexclusionsexpression': '"--ignore=\"".v:val."\""',
                 \ 'opt_str_mapdirexclusionsexpression': '',
@@ -2553,7 +2561,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordprefix': '',
                 \ 'opt_str_wholewordpostfix': '',
                 \ 'opt_str_wholewordoption': '-w ',
-                \ 'req_str_escapespecialcharacters': "-\^$#.*+?()[]{}",
+                \ 'req_str_escapespecialcharacters': "-\^$.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '"--ignore=\"".v:val."\""',
                 \ 'opt_str_mapdirexclusionsexpression': '',
@@ -2579,7 +2587,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordprefix': '',
                 \ 'opt_str_wholewordpostfix': '',
                 \ 'opt_str_wholewordoption': '-w ',
-                \ 'req_str_escapespecialcharacters': "\^$#.*+?()[]{}",
+                \ 'req_str_escapespecialcharacters': "\^$.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '',
                 \ 'opt_bool_filtertargetswithnofiles': '1',
@@ -2605,7 +2613,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordprefix': '\b',
                 \ 'opt_str_wholewordpostfix': '\b',
                 \ 'opt_str_wholewordoption': ' ',
-                \ 'req_str_escapespecialcharacters': "-\^$#.*+?()[]{}",
+                \ 'req_str_escapespecialcharacters': "-\^$.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '',
                 \ 'opt_bool_filtertargetswithnofiles': '0',
@@ -2629,7 +2637,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordprefix': '\b',
                 \ 'opt_str_wholewordpostfix': '\b',
                 \ 'opt_str_wholewordoption': '',
-                \ 'req_str_escapespecialcharacters': "\^$#.*+?()[]{}",
+                \ 'req_str_escapespecialcharacters': "\^$.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '',
                 \ 'opt_str_mapdirexclusionsexpression': '',
@@ -2654,7 +2662,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordprefix': '"\<',
                 \ 'opt_str_wholewordpostfix': '\>"',
                 \ 'opt_str_wholewordoption': '',
-                \ 'req_str_escapespecialcharacters': "\^$#.*",
+                \ 'req_str_escapespecialcharacters': "\^$.*",
                 \ 'opt_str_escapespecialcharacterstwice': "",
                 \ 'opt_str_mapexclusionsexpression': '',
                 \ 'opt_str_mapdirexclusionsexpression': '',
@@ -2746,6 +2754,8 @@ function! s:GetGrepCommandLine(pattern, add, wholeword, count, escapeArgs, filte
     else
         let pattern = a:escapeArgs ? s:EscapeSpecialCharacters(a:pattern) : a:pattern
     endif
+
+    let pattern = s:EscapeMultiple(a:pattern, "%#")
 
     " Enclose the pattern if needed; build from inner to outer
     if wholeword
