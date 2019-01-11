@@ -2808,12 +2808,6 @@ function! s:GetGrepCommandLine(pattern, add, wholeword, count, escapeArgs, filte
         let opts .= commandParams["opt_str_binaryswitch"]." "
     endif
 
-    if s:CommandHasLen("opt_str_binaryswitch") &&
-        \ ((g:EasyGrepBinary && s:CommandHas("opt_bool_binaryexcludedbydefault")) ||
-            \ (!g:EasyGrepBinary && !s:CommandHas("opt_bool_binaryexcludedbydefault")))
-        let opts .= commandParams["opt_str_binaryswitch"]." "
-    endif
-
     " Suppress errors
     if s:CommandHasLen("opt_str_suppresserrormessages")
         let opts .= commandParams["opt_str_suppresserrormessages"]." "
