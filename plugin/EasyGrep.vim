@@ -132,11 +132,11 @@ endfunction
 function! s:DoEscapeSpecialCharacters(str, escapeonce, escapetwice)
     let str = a:str
 
-    if strlen(escapeonce) > 0
+    if strlen(a:escapeonce) > 0
         let str = s:EscapeMultiple(str, a:escapeonce)
     endif
 
-    if strlen(escapetwice) > 0
+    if strlen(a:escapetwice) > 0
         let str = s:EscapeMultiple(str, a:escapetwice)
         let str = s:EscapeMultiple(str, a:escapetwice)
     endif
